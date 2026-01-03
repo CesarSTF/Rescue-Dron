@@ -1,4 +1,4 @@
-#ifndef MOTOR_CONTROLLER_H
+/*#ifndef MOTOR_CONTROLLER_H
 #define MOTOR_CONTROLLER_H
 
 #include <Arduino.h>
@@ -9,7 +9,7 @@ public:
 
     void begin();
 
-    void arm();       // Permite activar motores
+    void arm();       // Activar motores
     void disarm();    // Bloquea motores
     bool isArmed() const;
 
@@ -33,4 +33,34 @@ private:
     void writePWM(uint8_t motorIndex, float power);
 };
 
+#endif
+*/
+#ifndef MOTOR_CONTROLLER_H
+#define MOTOR_CONTROLLER_H
+#include <Arduino.h>
+
+class MotorController {
+
+public:
+
+    MotorController();
+
+    void begin();
+    void arm();
+    void disarm();
+    bool isArmed() const;
+    void setMotorSpeed(uint8_t motor, float power);
+    void killAllMotors();
+
+private:
+
+    static const uint8_t MOTOR_COUNT = 4;
+    uint8_t motorPins[MOTOR_COUNT] = {12, 13, 14, 15}; 
+    uint8_t pwmChannels[MOTOR_COUNT] = {0, 1, 2, 3};
+    const uint32_t pwmFreq = 15000; 
+    const uint8_t pwmResolution = 8; 
+    bool armed = false;
+    void writePWM(uint8_t motorIndex, float power);
+
+};
 #endif

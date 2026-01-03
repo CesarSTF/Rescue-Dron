@@ -23,19 +23,15 @@ void PIDController::reset() {
 float PIDController::compute(float setpoint, float measurement, float dt) {
     float error = setpoint - measurement;
 
-    // -------------------- PROPORCIONAL --------------------
     float P = kp * error;
 
-    // -------------------- INTEGRAL (con anti-windup) --------------------
     integrator += error * dt * ki;
 
-    // Clamp del integrador
     if (integrator > maxOut) integrator = maxOut;
     if (integrator < minOut) integrator = minOut;
 
     float I = integrator;
 
-    // -------------------- DERIVADA FILTRADA --------------------
     float rawD = (error - prevError) / dt;
     derivFilter = derivativeAlpha * derivFilter + (1.0f - derivativeAlpha) * rawD;
 
@@ -43,10 +39,8 @@ float PIDController::compute(float setpoint, float measurement, float dt) {
 
     prevError = error;
 
-    // -------------------- SUMA FINAL --------------------
     float output = P + I + D;
 
-    // Limitar salida
     if (output > maxOut) output = maxOut;
     if (output < minOut) output = minOut;
 

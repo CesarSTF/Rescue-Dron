@@ -15,9 +15,9 @@ public:
     void arm();
     void disarm();
 
-    void setThrottle(float t);   // 0.0 → 1.0
-    void setRollInput(float r);  // -1.0 → 1.0 (control desde slider)
-    void setPitchInput(float p); // -1.0 → 1.0
+    void setThrottle(float t);   
+    void setRollInput(float r);  
+    void setPitchInput(float p); 
 
     void update(float dt);
 

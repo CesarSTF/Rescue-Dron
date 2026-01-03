@@ -12,8 +12,8 @@
 #include "ControlFlash.h"
 
 // ------------------ CONFIG WiFi ------------------
-const char* ssid = "DEIVY";
-const char* password = "19082024Dav#Day";
+const char* ssid = "Dron-Rescue";
+const char* password = "susilasusia";
 
 // ------------------ COMPONENTES ------------------
 MotorController motors;
@@ -39,7 +39,7 @@ const char index_html[] PROGMEM = R"rawliteral(
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-  <title>DEIVY DRONE</title>
+  <title>RESCUE - DRONE</title>
   <style>
     body { margin: 0; padding: 0; background: #111; overflow: hidden; font-family: sans-serif; touch-action: none; }
     #cam-stream { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; transform: rotate(180deg); opacity: 0.8; }
@@ -58,14 +58,30 @@ const char index_html[] PROGMEM = R"rawliteral(
     .btn-active { background: #2ecc71; color: black; box-shadow: 0 0 15px #2ecc71; }
     .btn-flash { background: #f39c12; }
     .btn-flash-on { background: #f1c40f; color: black; box-shadow: 0 0 15px #f1c40f; }
-  </style>
+
+   @media (max-width: 768px) {
+     .left-panel { width: 80px; height: 200px; margin-left: 10px; }
+     .right-panel { width: 140px; height: 140px; margin-right: 10px; }
+     .top-bar { gap: 10px; }
+     .btn { padding: 8px 15px; font-size: 12px; }
+     .label { font-size: 12px; }
+   }
+
+   @media (max-width: 480px) {
+     .left-panel { width: 70px; height: 180px; }
+     .right-panel { width: 120px; height: 120px; }
+     .hud { padding-bottom: 10px; }
+     .top-bar { top: 5px; }
+     #debug { font-size: 10px; }
+   }
+   </style>
 </head>
 <body>
   <img id="cam-stream" src="/stream">
   <div class="top-bar">
     <button id="btnArm" class="btn btn-arm" onclick="toggleArm()">DESARMADO</button>
-    <button id="btnFlash" class="btn btn-flash" onclick="toggleFlash()">🔦</button>
-    <div style="color:white; font-size:12px; text-shadow:1px 1px 2px black;" id="debug">WiFi: DEIVY</div>
+    <button id="btnFlash" class="btn btn-flash" onclick="toggleFlash()">Flash</button>
+    <div style="color:white; font-size:12px; text-shadow:1px 1px 2px black;" id="debug"></div>
   </div>
   <div class="hud">
     <div class="left-panel">
@@ -85,7 +101,7 @@ const char index_html[] PROGMEM = R"rawliteral(
         armed = !armed;
         const btn = document.getElementById("btnArm");
         if(armed) {
-            btn.innerText = "¡ARMADO!"; btn.className = "btn btn-active";
+            btn.innerText = "ARMADO"; btn.className = "btn btn-active";
             fetch("/action?cmd=arm");
         } else {
             btn.innerText = "DESARMADO"; btn.className = "btn btn-arm";
@@ -254,9 +270,8 @@ void handleStream(AsyncWebServerRequest *request) {
   request->send(response);
 }
 
-// ------------------ TAREA DE VUELO (Core 1) ------------------
+// ------------------ TAREA DE VUELO ------------------
 void FlightTaskCode( void * pvParameters ) {
-  // NOTA: Serial NO FUNCIONA aquí porque estará apagado
   unsigned long lastTimeTask = 0;
 
   for(;;) {
@@ -291,16 +306,14 @@ void FlightTaskCode( void * pvParameters ) {
   }
 }
 
-// ------------------ SETUP (Core 0) ------------------
+// ------------------ SETUP ------------------
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); 
   
-  // 1. INICIO CONSOLA (SOLO PARA DIAGNÓSTICO INICIAL)
   Serial.begin(115200);
   delay(1000);
-  Serial.println("\n\n=== DEIVY DRONE: STARTUP ===");
+  Serial.println("\n\n=== DRONE: STARTUP ===");
 
-  // 2. CONFIGURACIÓN WIFI ROBUSTA (Estilo Carro)
   WiFi.disconnect(true);
   delay(100);
   WiFi.mode(WIFI_AP);
@@ -322,19 +335,16 @@ void setup() {
     delay(2000); ESP.restart();
   }
 
-  // 3. INICIO HARDWARE BÁSICO
   motors.begin();
   camara.begin(); 
   flash.begin();
 
-  // 4. TRANSICIÓN CRÍTICA: SERIAL -> SENSOR
   Serial.println("!!! ATENCION !!!");
   Serial.println("Apagando Serial Monitor en 3 segundos...");
   Serial.println("Conecta el Sensor MPU6050 ahora si no lo has hecho.");
   delay(3000);
-  Serial.end(); // ADIÓS CONSOLA, HOLA PINES 1 Y 3
+  Serial.end(); 
 
-  // 5. INICIO SENSOR Y VUELO (Ahora que los pines estan libres)
   // SensorIMU.cpp usa Wire.begin(1, 3) internamente
   imu.begin(); 
   fc.begin();

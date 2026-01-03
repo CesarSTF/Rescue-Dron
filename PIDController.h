@@ -12,7 +12,7 @@ public:
 
     float compute(float setpoint, float measurement, float dt);
 
-    void reset(); // limpia integrador y derivada
+    void reset(); 
 
 private:
     float kp, ki, kd;
@@ -23,8 +23,7 @@ private:
     float integrator = 0.0f;
     float prevError = 0.0f;
 
-    float derivFilter = 0.0f;      // filtro para derivada
-    const float derivativeAlpha = 0.7f; // 0–1 (más alto = más suave)
+    float derivFilter = 0.0f;      
+    const float derivativeAlpha = 0.7f; 
 };
-
 #endif

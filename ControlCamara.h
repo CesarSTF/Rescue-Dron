@@ -14,7 +14,7 @@ public:
     bool estaInicializada() const;      // Retorna estado
 
 private:
-    camera_config_t config; // Ahora es privado
+    camera_config_t config; 
     bool inicializada;
 };
 

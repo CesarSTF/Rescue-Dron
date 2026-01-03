@@ -1,6 +1,5 @@
 #include "SensorIMU.h"
 
-// Dirección I2C del MPU6050 (puede ser 0x68 o 0x69)
 #define MPU6050_ADDR 0x68
 
 SensorIMU::SensorIMU() {}
@@ -11,14 +10,12 @@ bool SensorIMU::begin() {
     Wire.setClock(400000);
 
     Wire.beginTransmission(MPU6050_ADDR);
-    Wire.write(0x6B);   // PWR_MGMT_1 register
-    Wire.write(0);      // set to zero (wakes up the MPU-6050)
+    Wire.write(0x6B);  
+    Wire.write(0);     
     if (Wire.endTransmission() != 0) return false;
 
-    delay(50); // Esperar a que estabilice
+    delay(50);
 
-    // --- Calibración simple de offset del giroscopio ---
-    // Tomamos 1000 muestras rápidas para saber el "cero"
     const int N = 1000;
     long gx_sum = 0, gy_sum = 0, gz_sum = 0;
 

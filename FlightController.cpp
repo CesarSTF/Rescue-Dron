@@ -4,7 +4,7 @@ FlightController::FlightController(MotorController* motors, SensorIMU* imu)
     : motors(motors), imu(imu) {}
 
 void FlightController::begin() {
-    rollPID.setTunings(1.8f, 0.0f, 0.35f);   // puedes afinarlos después
+    rollPID.setTunings(1.8f, 0.0f, 0.35f);   
     pitchPID.setTunings(1.8f, 0.0f, 0.35f);
 
     rollPID.setOutputLimits(-0.3f, 0.3f);
@@ -43,25 +43,32 @@ void FlightController::setPitchInput(float p) {
 //         LOOP PRINCIPAL
 // ─────────────────────────────
 void FlightController::update(float dt) {
-    imu->update(dt);  
+    //imu->update(dt);  
 
     if (!armed) {
-        return;  // No mover motores mientras esté desarmado
+        return;  
     }
+
+    if (throttle < 0.05f) {  
+        motors->setMotorSpeed(1, 0.0f);
+        motors->setMotorSpeed(2, 0.0f);
+        motors->setMotorSpeed(3, 0.0f);
+        motors->setMotorSpeed(4, 0.0f);
+        return;  
+    }
+
 
     float currentRoll  = imu->getRoll();
     float currentPitch = imu->getPitch();
 
-    float rollCorr  = rollPID.compute(rollInput * 20.0f, currentRoll, dt);
-    float pitchCorr = pitchPID.compute(pitchInput * 20.0f, currentPitch, dt);
+    //float rollCorr  = rollPID.compute(rollInput * 20.0f, currentRoll, dt);
+    //float pitchCorr = pitchPID.compute(pitchInput * 20.0f, currentPitch, dt);
+    float rollCorr = 0.0f;
+    float pitchCorr = 0.0f;
 
     mixAndSend(rollCorr, pitchCorr);
 }
 
-
-// ─────────────────────────────
-//     MEZCLA QUAD-X REAL  
-// ─────────────────────────────
 void FlightController::mixAndSend(float rollCorr, float pitchCorr) {
 
     float m1 = throttle + pitchCorr + rollCorr;  // Front Left  (Motor 1)
